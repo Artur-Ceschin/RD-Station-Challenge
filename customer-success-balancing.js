@@ -21,25 +21,49 @@ function customerSuccessBalancing(
 
   const result = []
 
-  const customerSuccessWithMostCustomers = customers?.map((customer) => {
-    const customerSuccessWithCustomer = sortedCustomerServices?.filter((cs) => {
-      if (cs.score <= customer.score) {
-        const isWithCS = result.filter((data) => data.id === customer.id)
-        console.log("isWithCS", isWithCS)
-        if (isWithCS) {
+  sortedCustomerServices?.map((customerSuccess) => {
+    customers?.filter((customer) => {
+      if (customer.score <= customerSuccess.score) {
+        const customerAlreadyWithCS = result?.filter((cs) => {
+          return cs.customer.id === customer.id
+        })
+        if (customerAlreadyWithCS.length > 0) {
           return
         }
 
-        return {
-          cs,
-        }
+        return result.push({
+          ...customerSuccess,
+          customer,
+        })
       }
     })
-
-    return result.push({ ...customer, customerSuccessWithCustomer })
   })
 
-  // console.log("result", result)
+  console.log("result", result)
+
+  const totalCustomerSuccess = result?.map((final) => {
+    const filteredCustomerSuccess = result?.filter((cs) => {
+      return cs.id === final.id
+    })
+
+    const totalCustomer = filteredCustomerSuccess.length
+
+    return {
+      id: final.id,
+      totalCustomer,
+    }
+  })
+
+  const customersuccessWithMostCustomer = totalCustomerSuccess?.reduce(
+    (prev, next) => {
+      if (prev.totalCustomer === next.totalCustomer) {
+        return 0
+      }
+      return prev.totalCustomer > next.totalCustomer ? prev : next
+    }
+  )
+
+  return customersuccessWithMostCustomer
 }
 customerSuccessBalancing()
 test("Scenario 1", () => {
@@ -48,8 +72,8 @@ test("Scenario 1", () => {
     { id: 2, score: 20 },
     { id: 3, score: 95 },
     { id: 4, score: 75 },
-    { id: 5, score: 20 },
-    { id: 6, score: 80 },
+    { id: 5, score: 85 },
+    { id: 6, score: 95 },
   ]
   const customers = [
     { id: 1, score: 90 },
