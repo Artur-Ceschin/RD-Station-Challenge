@@ -19,27 +19,27 @@ function customerSuccessBalancing(
     (prev, next) => prev.score - next.score
   )
 
+  const result = []
+
   const customerSuccessWithMostCustomers = customers?.map((customer) => {
-    const customerSuccessWithCustomer = sortedCustomerServices?.flatMap(
-      (cs) => {
-        if (cs.score <= customer.score) {
-          return {
-            cs,
-          }
+    const customerSuccessWithCustomer = sortedCustomerServices?.filter((cs) => {
+      if (cs.score <= customer.score) {
+        const isWithCS = result.filter((data) => data.id === customer.id)
+        console.log("isWithCS", isWithCS)
+        if (isWithCS) {
+          return
+        }
+
+        return {
+          cs,
         }
       }
-    )
+    })
 
-    return {
-      ...customer,
-      customerSuccessWithCustomer,
-    }
+    return result.push({ ...customer, customerSuccessWithCustomer })
   })
 
-  console.log(
-    "customerSuccessWithMostCustomers",
-    customerSuccessWithMostCustomers
-  )
+  // console.log("result", result)
 }
 customerSuccessBalancing()
 test("Scenario 1", () => {
